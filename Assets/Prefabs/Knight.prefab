@@ -50,10 +50,10 @@ BoxCollider2D:
   m_Offset: {x: 0, y: 0}
   m_SpriteTilingProperty:
     border: {x: 0, y: 0, z: 0, w: 0}
-    pivot: {x: 0, y: 0}
-    oldSize: {x: 0, y: 0}
-    newSize: {x: 0, y: 0}
-    adaptiveTilingThreshold: 0
+    pivot: {x: 0.5, y: 0.5}
+    oldSize: {x: 1, y: 0.98333335}
+    newSize: {x: 1, y: 0.98333335}
+    adaptiveTilingThreshold: 0.5
     drawMode: 0
     adaptiveTiling: 0
   m_AutoTiling: 0
@@ -100,16 +100,16 @@ SpriteRenderer:
   m_LightmapParameters: {fileID: 0}
   m_SortingLayerID: -1001002051
   m_SortingLayer: 2
-  m_SortingOrder: 0
-  m_Sprite: {fileID: 0}
+  m_SortingOrder: 1
+  m_Sprite: {fileID: -2126738357, guid: b45a93e695e6f4edaaf16abf89d9aadd, type: 3}
   m_Color: {r: 1, g: 1, b: 1, a: 1}
   m_FlipX: 0
   m_FlipY: 0
   m_DrawMode: 0
-  m_Size: {x: 1, y: 1}
+  m_Size: {x: 1, y: 0.98333335}
   m_AdaptiveModeThreshold: 0.5
   m_SpriteTileMode: 0
-  m_WasSpriteAssigned: 0
+  m_WasSpriteAssigned: 1
   m_MaskInteraction: 0
   m_SpriteSortPoint: 0
 --- !u!114 &8505642003883578716
@@ -125,6 +125,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   isWhite: 0
-  PieceRenderer: {fileID: 8505642003883578713}
-  whiteKnight: {fileID: 21300000, guid: ff58ae85f5f394150a4b0752ee31c283, type: 3}
-  blackKnight: {fileID: 21300000, guid: a574e688b40ec474db2c0a639e6bcfe3, type: 3}
+  pieceRenderer: {fileID: 8505642003883578713}
+  whitePieceSprite: {fileID: -2126738357, guid: b45a93e695e6f4edaaf16abf89d9aadd, type: 3}
+  blackPieceSprite: {fileID: -1626727977, guid: b45a93e695e6f4edaaf16abf89d9aadd, type: 3}
+  isSelected: 0

@@ -159,7 +159,7 @@ Camera:
   m_Enabled: 1
   serializedVersion: 2
   m_ClearFlags: 2
-  m_BackGroundColor: {r: 0.19215687, g: 0.3019608, b: 0.4745098, a: 0}
+  m_BackGroundColor: {r: 0, g: 0, b: 0, a: 0}
   m_projectionMatrixMode: 1
   m_GateFitMode: 2
   m_FOVAxisMode: 0
@@ -261,4 +261,3 @@ MonoBehaviour:
   knightGameObject: {fileID: 8505642003883578716, guid: b3d06e97224524b098290cecfb95ce06, type: 3}
   queenGameObject: {fileID: 4702839388476862796, guid: fe61ea6522b5d4f4a993b80102ef00b5, type: 3}
   kingGameObject: {fileID: 8280662611508957882, guid: 9990d4f1d1c4641259926f8adff1db71, type: 3}
-  chessPieces: []

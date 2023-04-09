@@ -1,18 +1,16 @@
-using System;
-using System.Collections;
 using System.Collections.Generic;
-using System.Net;
-using Unity.VisualScripting;
 using UnityEngine;
  
 public class GridManager : MonoBehaviour {
+    public static GridManager instance;
+    
     [SerializeField] private int width, height; // visible in unity window even when private
  
     [SerializeField] private Tile tilePrefab;
  
     [SerializeField] private Transform myCamera;
 
-    private Dictionary<Vector2, ChessPiece> _tiles;
+    private static Dictionary<Vector2, ChessPiece> _chessPiecesDictionary;
 
     [SerializeField] private Pawn pawnGameObject;
     
@@ -26,39 +24,71 @@ public class GridManager : MonoBehaviour {
     
     [SerializeField] private King kingGameObject;
 
-    public List<ChessPiece> chessPieces;
+    private static Tile[,] _tiles;
+    private static List<ChessPiece> _chessPieces;
 
+    private void Awake()
+    {
+        instance = this;
+    }
     void Start() {
+        _chessPieces = new List<ChessPiece>();
+        _chessPiecesDictionary = new Dictionary<Vector2, ChessPiece>();
+        _tiles = new Tile[8, 8];
         GenerateGrid();
     }
- 
-    void GenerateGrid()
-    {
-        _tiles = new Dictionary<Vector2, ChessPiece>();
-        for (int x = 0; x < width; x++) {
-            for (int y = 0; y < height; y++) {
-                var spawnedTile = Instantiate(tilePrefab, new Vector3(x, y), Quaternion.identity);
-                spawnedTile.name = $"Tile {x} {y}";
- 
-                var isOffset = (x + y) % 2 == 0;
-                spawnedTile.Init(isOffset);
 
-                _tiles[new Vector2(x, y)] = GeneratePiece(x, y);;
-                Console.Out.Write(_tiles[new Vector2(x,y)]);
+    void Update()
+    {
+        if (Input.GetMouseButtonDown(0))
+        {
+            if (Camera.main == null) return;
+            Vector3 mousePosition = Camera.main.ScreenToWorldPoint(Input.mousePosition);
+            int xMouse = Mathf.RoundToInt(mousePosition.x);
+            int yMouse = Mathf.RoundToInt(mousePosition.y);
+
+            if(GetChessPieceAtPosition(new Vector2(xMouse, yMouse)) != null)
+            {
+                GetChessPieceAtPosition(new Vector2(xMouse, yMouse)).SelectPiece(xMouse, yMouse);
+            } 
+        }
+    }
+ 
+    private void GenerateGrid()
+    {
+        for (int x = 0; x < width; x++) {
+            for (int y = 0; y < height; y++)
+            {
+                _tiles[x, y] = GenerateTile(x, y); // Add tiles that create a board
+
+                _chessPiecesDictionary[new Vector2(x, y)] = GeneratePiece(x, y); // Add piece on the board
             }
         }
  
         myCamera.transform.position = new Vector3((float)width/2 -0.5f, (float)height / 2 - 0.5f,-10);
     }
-    ChessPiece GeneratePiece(int x, int y)
+
+    private Tile GenerateTile(int x, int y)
+    {
+        var spawnedTile = Instantiate(tilePrefab, new Vector3(x, y), Quaternion.identity);
+        spawnedTile.name = $"Tile {x} {y}";
+ 
+        var isOffset = (x + y) % 2 == 0;
+        spawnedTile.Init(isOffset);
+
+        return spawnedTile;
+    }
+    private ChessPiece GeneratePiece(int x, int y)
     {
         if (y == 1)
         {
             var pawn = Instantiate(pawnGameObject, Vector3.zero, Quaternion.identity);
             pawn.transform.position = new Vector3(x, y, 0);
             pawn.name = $"WhitePawn{x}";
+            pawn.X = x;
+            pawn.Y = y;
             pawn.ChooseColor(true);
-            chessPieces.Add(pawn);
+            _chessPieces.Add(pawn);
             return pawn;
         }
         else if (y == 6)
@@ -66,8 +96,10 @@ public class GridManager : MonoBehaviour {
             var pawn = Instantiate(pawnGameObject, Vector3.zero, Quaternion.identity);
             pawn.transform.position = new Vector3(x, y, 0);
             pawn.name = $"BlackPawn{x}";
+            pawn.X = x;
+            pawn.Y = y;
             pawn.ChooseColor(false);
-            chessPieces.Add(pawn);
+            _chessPieces.Add(pawn);
             return pawn;
         }
         else if (((x == 0) || (x == 7)) && ((y == 0) || (y == 7)))
@@ -84,8 +116,9 @@ public class GridManager : MonoBehaviour {
                 rook.name = $"BlackRook{x}";
                 rook.ChooseColor(false);
             }
-            
-            chessPieces.Add(rook);
+            rook.X = x;
+            rook.Y = y;
+            _chessPieces.Add(rook);
             return rook;
         }
         else if (((x == 1) || (x == 6)) && ((y == 0) || (y == 7)))
@@ -102,8 +135,9 @@ public class GridManager : MonoBehaviour {
                 knight.name = $"BlackKnight{x}";
                 knight.ChooseColor(false);
             }
-            
-            chessPieces.Add(knight);
+            knight.X = x;
+            knight.Y = y;
+            _chessPieces.Add(knight);
             return knight;
         }
         else if (((x == 2) || (x == 5)) && ((y == 0) || (y == 7)))
@@ -120,8 +154,10 @@ public class GridManager : MonoBehaviour {
                 bishop.name = $"BlackBishop{x}";
                 bishop.ChooseColor(false);
             }
-            
-            chessPieces.Add(bishop);
+
+            bishop.X = x;
+            bishop.Y = y;
+            _chessPieces.Add(bishop);
             return bishop;
         }
         else if ((x == 3) && ((y == 0) || (y == 7)))
@@ -138,8 +174,10 @@ public class GridManager : MonoBehaviour {
                 queen.name = $"BlackQueen{x}";
                 queen.ChooseColor(false);
             }
-            
-            chessPieces.Add(queen);
+
+            queen.X = x;
+            queen.Y = y;
+            _chessPieces.Add(queen);
             return queen;
         }
         else if ((x == 4) && ((y == 0) || (y == 7)))
@@ -157,19 +195,62 @@ public class GridManager : MonoBehaviour {
                 king.ChooseColor(false);
             }
 
-            chessPieces.Add(king);
+            king.X = x;
+            king.Y = y;
+            _chessPieces.Add(king);
             return king;
         }
-
+        else return null;
+    }
+    public void RemoveCapturedPiece(Vector2 position, ChessPiece movedPiece)
+    {
+        // update chesspieces dictionary with a new position of a piece
+        // remove piece that was on a square that moved piece moved to from dict, list and game
+        if (_chessPiecesDictionary[position] != null)
+        {
+            Debug.Log($"WHY {name}");
+            ChessPiece pieceToRemove = _chessPiecesDictionary[position];
+            _chessPiecesDictionary.Remove(position);
+            _chessPieces.Remove(pieceToRemove);
+            Destroy(pieceToRemove.gameObject);
+        }
+        _chessPiecesDictionary[new Vector2(movedPiece.X, movedPiece.Y)] = movedPiece;
+        Debug.Log($"dictionary Count {_chessPiecesDictionary.Count}");
+        Debug.Log($" chessPieces Count{_chessPieces.Count}");
+    }
+    public void ChessPieceAtPositionToNull(Vector2 pos)
+    {
+        _chessPiecesDictionary[pos] = null;
+        Debug.Log($"Chess piece from {pos.x} {pos.y} removed");
+    }
+    public ChessPiece GetChessPieceAtPosition(Vector2 pos)
+    {
+        if (_chessPiecesDictionary.TryGetValue(pos, out var chessPiece)) return chessPiece;
         return null;
     }
-    
-    
-    public ChessPiece GetTileAtPosition(Vector2 pos)
+
+    public void MarkTiles(List<Vector2> tilesToMark)
     {
-        if(_tiles.TryGetValue(pos, out var tile)) return tile;
-        
-        return null;
+        foreach (Vector2 tileToMark in tilesToMark)
+        {
+            _tiles[Mathf.RoundToInt(tileToMark.x), Mathf.RoundToInt(tileToMark.y)].Mark();
+        }
+    }
+    public void UnmarkTiles(List<Vector2> tilesToUnmark)
+    {
+        foreach (Vector2 tileToMark in tilesToUnmark)
+        {
+            _tiles[Mathf.RoundToInt(tileToMark.x), Mathf.RoundToInt(tileToMark.y)].Unmark();
+        }
+    }
+
+    public void Highlight(int x, int y)
+    {
+        _tiles[x, y].Highlight();
+    }
+    public void Unhighlight(int x, int y)
+    {
+        _tiles[x, y].Unhighlight();
     }
     
 }
